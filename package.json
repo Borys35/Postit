@@ -1,0 +1,28 @@
+{
+  "name": "postit",
+  "version": "1.0.0",
+  "description": "Postit is something like simpler version of reddit",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "cd client && npm run build",
+    "install": "cd client && npm install",
+    "heroku-postbuild": "npm run install && npm run build",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Borys35/Postit.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Borys35/Postit/issues"
+  },
+  "homepage": "https://github.com/Borys35/Postit#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.9.2"
+  }
+}
