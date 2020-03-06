@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   BrowserRouter as Router,
   Route,
@@ -6,6 +6,9 @@ import {
   Redirect
 } from 'react-router-dom';
 import './App.css';
+import Auth, { AuthContext } from './components/Auth';
+import Loading from './components/Loading';
+
 import Navbar from './components/Navbar';
 import Home from './components/Home';
 import Login from './components/Login';
@@ -16,66 +19,69 @@ import Profile from './components/Profile';
 import Logout from './components/Logout';
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
+  const { isLoading, userId } = useContext(AuthContext);
   return (
     <Route
       {...rest}
       render={props =>
-        true ? <Component {...props} /> : <Redirect to="/register" />
+        !isLoading ? (
+          userId ? (
+            <Component {...props} />
+          ) : (
+            <Redirect to="/register" />
+          )
+        ) : (
+          <Loading />
+        )
       }
     />
   );
 };
 
 const PublicOnlyRoute = ({ component: Component, ...rest }) => {
+  const { isLoading, userId } = useContext(AuthContext);
   return (
     <Route
       {...rest}
-      render={props => (true ? <Component {...props} /> : <Redirect to="/" />)}
+      render={props =>
+        !isLoading ? (
+          !userId ? (
+            <Component {...props} />
+          ) : (
+            <Redirect to="/" />
+          )
+        ) : (
+          <Loading />
+        )
+      }
     />
   );
 };
 
 function App() {
-  const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
-
-  useEffect(() => {
-    fetch('http://localhost:5000/api/users/verify', { credentials: 'include' })
-      .then(res => res.json())
-      .then(data => {
-        setUser(data);
-      })
-      .catch(err => console.log(err));
-  }, []);
 
   return (
     <div>
-      <Router>
-        <Navbar user={user} />
-        <Switch>
-          <Route
-            exact
-            path="/posts"
-            component={() => <Home posts={posts} setPosts={setPosts} />}
-          />
-          <Route path="/posts/:id" component={PostDetails} />
-          <PublicOnlyRoute
-            path="/login"
-            component={() => <Login onLogin={setUser} />}
-          />
-          <PublicOnlyRoute
-            path="/register"
-            component={() => <Register onRegister={setUser} />}
-          />
-          <PublicOnlyRoute
-            path="/logout"
-            component={() => <Logout onLogout={setUser} />}
-          />
-          <PrivateRoute path="/create-post" component={CreatePost} />
-          <Route path="/profile/:id" component={Profile} />
-          <Route path="*" component={() => <Redirect to="/posts" />} />
-        </Switch>
-      </Router>
+      <Auth>
+        <Router>
+          <Navbar />
+          <Switch>
+            <Route
+              exact
+              path="/posts"
+              component={() => <Home posts={posts} setPosts={setPosts} />}
+            />
+            <Route path="/posts/:id" component={PostDetails} />
+            <PublicOnlyRoute path="/login" component={Login} />
+            <PublicOnlyRoute path="/register" component={Register} />
+            <PrivateRoute path="/create-post" component={CreatePost} />
+            <PrivateRoute path="/logout" component={Logout} />
+            <Route path="/profile/:id" component={Profile} />
+            <Route path="*" component={() => <Redirect to="/posts" />} />
+          </Switch>
+        </Router>
+      </Auth>
     </div>
   );
 }

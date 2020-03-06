@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import Loading from './Loading';
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -14,11 +15,7 @@ export default function Profile() {
   return (
     <div className="container-lg">
       {user === null ? (
-        <div className="d-flex justify-content-center align-items-center">
-          <div className="spinner-border" role="status">
-            <span className="sr-only">Loading...</span>
-          </div>
-        </div>
+        <Loading />
       ) : (
         <React.Fragment>
           <h2>{user.username}</h2>

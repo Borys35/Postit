@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link, useHistory } from 'react-router-dom';
+import { AuthContext } from './Auth';
 
-export default function Logout(props) {
-  const { onLogout } = props;
+export default function Logout() {
+  const { setUserId } = useContext(AuthContext);
   const history = useHistory();
 
   function handleLogout() {
@@ -11,13 +12,15 @@ export default function Logout(props) {
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include'
     }).then(() => {
-      onLogout(null);
+      setUserId(null);
       history.push('/');
     });
   }
 
   return (
-    <div className="container-lg">
+    <div className="container-lg text-center">
+      <h3 className="text-danger font-weight-bold">Log out from postit?</h3>
+      <p>You can always log back in at any time</p>
       <div className="d-flex justify-content-center align-items-center">
         <Link className="btn btn-primary mx-2" to="/">
           Go back

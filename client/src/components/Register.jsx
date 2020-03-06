@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
+import { AuthContext } from './Auth';
 
 export default function Register(props) {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { onRegister } = props;
+  const { setUserId } = useContext(AuthContext);
   const history = useHistory();
 
   function handleRegister() {
@@ -21,8 +22,7 @@ export default function Register(props) {
     })
       .then(res => res.json())
       .then(data => {
-        console.log(data);
-        onRegister(data);
+        setUserId(data);
         history.push('/');
       })
       .catch(err => {

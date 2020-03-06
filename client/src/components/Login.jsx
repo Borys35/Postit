@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
+import { AuthContext } from './Auth';
 
 export default function Login(props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { onLogin } = props;
+  const { setUserId } = useContext(AuthContext);
   const history = useHistory();
 
   function handleLogin() {
@@ -19,7 +20,7 @@ export default function Login(props) {
     })
       .then(res => res.json())
       .then(data => {
-        onLogin(data);
+        setUserId(data._id);
         history.push('/');
       })
       .catch(err => {

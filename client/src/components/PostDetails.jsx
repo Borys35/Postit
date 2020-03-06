@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { calculateTimeAgo } from '../utils';
+import Loading from './Loading';
 
 export default function PostDetails() {
   const [post, setPost] = useState(null);
@@ -16,11 +17,7 @@ export default function PostDetails() {
   return (
     <div className="container-lg">
       {post === null ? (
-        <div className="d-flex justify-content-center align-items-center">
-          <div className="spinner-border" role="status">
-            <span className="sr-only">Loading...</span>
-          </div>
-        </div>
+        <Loading />
       ) : (
         <React.Fragment>
           <h2>{post.title}</h2>
