@@ -3,9 +3,13 @@ const mongoose = require('mongoose');
 const postSchema = new mongoose.Schema({
   title: String,
   content: String,
+  commentable: Boolean,
   author: {
-    type: mongoose.Types.ObjectId,
-    ref: 'User'
+    username: String,
+    id: {
+      type: mongoose.Types.ObjectId,
+      ref: 'User'
+    }
   },
   createdAt: {
     type: Date,

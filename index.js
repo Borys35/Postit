@@ -1,15 +1,54 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const app = express();
+const cookieParser = require('cookie-parser');
+const cors = require('cors');
+require('dotenv').config();
 
+const app = express();
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  optionsSuccessStatus: 200,
+  credentials: true
+};
+
+// Middleware
+app.use(express.json());
+app.use(cookieParser());
+app.use(cors(corsOptions));
+// app.use((req, res, next) => {
+//   res.set({
+//     'Access-Control-Allow-Origin': 'http://localhost:3000',
+//     'Access-Control-Allow-Headers':
+//       'Origin, X-Requested-With, Content-Type, Accept',
+//     'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
+//     'Access-Control-Allow-Credentials': true
+//   });
+//   next();
+// });
+
+// Routes
+const users = require('./routes/users');
+const posts = require('./routes/posts');
+
+// Use routes
+app.use('/api/users', users);
+app.use('/api/posts', posts);
+
+// Deployment condition
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('client/build'));
 }
 
-// mongoose.connect('URI TO ADD', () => {
-//   console.log('Connected to database');
-// });
+// Connecting to database
+mongoose.connect(
+  process.env.MONGODB_ATLAS_URI,
+  { useNewUrlParser: true, useUnifiedTopology: true },
+  () => {
+    console.log('Connected to database');
+  }
+);
 
+// Running server app
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
