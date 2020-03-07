@@ -9,7 +9,7 @@ export default function Login(props) {
   const history = useHistory();
 
   function handleLogin() {
-    fetch('http://localhost:5000/api/users/login', {
+    fetch('/api/users/login', {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',

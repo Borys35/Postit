@@ -7,7 +7,7 @@ export default function Logout() {
   const history = useHistory();
 
   function handleLogout() {
-    fetch('http://localhost:5000/api/users/logout', {
+    fetch('/api/users/logout', {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include'

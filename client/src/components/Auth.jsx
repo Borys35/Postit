@@ -7,7 +7,7 @@ export default function Auth({ children }) {
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/users/verify', { credentials: 'include' })
+    fetch('/api/users/verify', { credentials: 'include' })
       .then(res => res.json())
       .then(data => setUserId(data._id))
       .catch(() => setUserId(null))

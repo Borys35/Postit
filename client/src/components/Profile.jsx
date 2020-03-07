@@ -7,7 +7,7 @@ export default function Profile() {
   const { id } = useParams();
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/users/get/${id}`)
+    fetch(`/api/users/get/${id}`)
       .then(res => res.json())
       .then(setUser);
   }, []);

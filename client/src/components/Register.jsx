@@ -10,7 +10,7 @@ export default function Register(props) {
   const history = useHistory();
 
   function handleRegister() {
-    fetch('http://localhost:5000/api/users/register', {
+    fetch('/api/users/register', {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',

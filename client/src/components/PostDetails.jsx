@@ -8,7 +8,7 @@ export default function PostDetails() {
   const { id } = useParams();
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/posts/${id}`)
+    fetch(`/api/posts/${id}`)
       .then(res => res.json())
       .then(data => setPost(data))
       .catch(err => console.log(err));

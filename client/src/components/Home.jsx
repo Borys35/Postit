@@ -6,7 +6,7 @@ export default function Home(props) {
 
   useEffect(() => {
     if (posts.length === 0)
-      fetch('http://localhost:5000/api/posts/')
+      fetch('/api/posts/')
         .then(res => res.json())
         .then(setPosts);
   }, []);

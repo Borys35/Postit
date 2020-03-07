@@ -8,7 +8,7 @@ export default function CreatePost() {
   const history = useHistory();
 
   function handleCreate() {
-    fetch('http://localhost:5000/api/posts/create', {
+    fetch('/api/posts/create', {
       method: 'post',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
