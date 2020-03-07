@@ -5,7 +5,7 @@ import { AuthContext } from './Auth';
 export default function Login(props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { setUserId } = useContext(AuthContext);
+  const { setUser } = useContext(AuthContext);
   const history = useHistory();
 
   function handleLogin() {
@@ -20,7 +20,7 @@ export default function Login(props) {
     })
       .then(res => res.json())
       .then(data => {
-        setUserId(data._id);
+        setUser(data);
         history.push('/');
       })
       .catch(err => {

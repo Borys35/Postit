@@ -1,11 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect, useContext } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import { calculateTimeAgo } from '../utils';
+import { AuthContext } from './Auth';
+
 import Loading from './Loading';
+import AddComment from './AddComment';
+import Comments from './Comments';
 
 export default function PostDetails() {
   const [post, setPost] = useState(null);
   const { id } = useParams();
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     fetch(`/api/posts/${id}`)
@@ -16,14 +21,29 @@ export default function PostDetails() {
 
   return (
     <div className="container-lg">
-      {post === null ? (
+      {!post ? (
         <Loading />
       ) : (
         <React.Fragment>
           <h2>{post.title}</h2>
           <p>{post.content}</p>
-          <h3>{post.author.username}</h3>
+          <h3>
+            <Link to={`/profile/${post.author.username}`}>
+              Author: {post.author.username}
+            </Link>
+          </h3>
           <small>{calculateTimeAgo(post.createdAt)}</small>
+          <div className="m-4">
+            {user ? (
+              <AddComment postId={id} />
+            ) : (
+              <h4>
+                <Link to="/login">Sign in</Link> to be able to comment
+              </h4>
+            )}
+          </div>
+
+          <Comments comments={post.comments} />
         </React.Fragment>
       )}
     </div>

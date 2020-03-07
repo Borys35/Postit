@@ -36,10 +36,6 @@ app.use('/api/users', users);
 app.use('/api/posts', posts);
 
 // Deployment condition
-// if (process.env.NODE_ENV === 'production') {
-//   app.use(express.static('client/build'));
-// }
-
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, 'client/build')));
 

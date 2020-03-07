@@ -6,7 +6,7 @@ export default function Register(props) {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { setUserId } = useContext(AuthContext);
+  const { setUser } = useContext(AuthContext);
   const history = useHistory();
 
   function handleRegister() {
@@ -22,7 +22,7 @@ export default function Register(props) {
     })
       .then(res => res.json())
       .then(data => {
-        setUserId(data);
+        setUser(data);
         history.push('/');
       })
       .catch(err => {

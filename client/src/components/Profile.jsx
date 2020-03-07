@@ -4,10 +4,10 @@ import Loading from './Loading';
 
 export default function Profile() {
   const [user, setUser] = useState(null);
-  const { id } = useParams();
+  const { name } = useParams();
 
   useEffect(() => {
-    fetch(`/api/users/get/${id}`)
+    fetch(`/api/users/get-by-name/${name}`)
       .then(res => res.json())
       .then(setUser);
   }, []);

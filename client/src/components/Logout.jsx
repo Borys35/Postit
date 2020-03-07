@@ -3,7 +3,7 @@ import { Link, useHistory } from 'react-router-dom';
 import { AuthContext } from './Auth';
 
 export default function Logout() {
-  const { setUserId } = useContext(AuthContext);
+  const { setUser } = useContext(AuthContext);
   const history = useHistory();
 
   function handleLogout() {
@@ -12,7 +12,7 @@ export default function Logout() {
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include'
     }).then(() => {
-      setUserId(null);
+      setUser(null);
       history.push('/');
     });
   }

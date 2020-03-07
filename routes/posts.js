@@ -15,6 +15,14 @@ const postSchema = Joi.object({
   author: Joi.required()
 });
 
+const commentSchema = Joi.object({
+  content: Joi.string()
+    .min(5)
+    .max(200)
+    .required(),
+  author: Joi.required()
+});
+
 router.get('/', (req, res) => {
   Post.find((err, posts) => {
     if (err) return res.status(400).send(err);
@@ -29,9 +37,31 @@ router.get('/:id', (req, res) => {
   });
 });
 
+router.post('/add-comment/:id', (req, res) => {
+  const user = req.cookies.user;
+  if (!user) return res.status(400).send('No "user"');
+
+  const commentDoc = {
+    content: req.body.content,
+    author: user
+  };
+
+  const { error } = commentSchema.validate(commentDoc);
+  if (error) return res.status(400).send(error);
+
+  Post.findByIdAndUpdate(
+    req.params.id,
+    { $push: { comments: commentDoc } },
+    (err, post) => {
+      if (err) res.status(400).send(err);
+      res.status(200).send(post);
+    }
+  );
+});
+
 router.post('/create', (req, res) => {
   const user = req.cookies.user;
-  if (user === null) return res.status(400).send('No "user"');
+  if (!user) return res.status(400).send('No "user"');
 
   const postDoc = {
     title: req.body.title,

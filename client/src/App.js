@@ -19,16 +19,16 @@ import Profile from './components/Profile';
 import Logout from './components/Logout';
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
-  const { isLoading, userId } = useContext(AuthContext);
+  const { isLoading, user } = useContext(AuthContext);
   return (
     <Route
       {...rest}
       render={props =>
         !isLoading ? (
-          userId ? (
+          user ? (
             <Component {...props} />
           ) : (
-            <Redirect to="/register" />
+            <Redirect to="/login" />
           )
         ) : (
           <Loading />
@@ -39,13 +39,13 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
 };
 
 const PublicOnlyRoute = ({ component: Component, ...rest }) => {
-  const { isLoading, userId } = useContext(AuthContext);
+  const { isLoading, user } = useContext(AuthContext);
   return (
     <Route
       {...rest}
       render={props =>
         !isLoading ? (
-          !userId ? (
+          !user ? (
             <Component {...props} />
           ) : (
             <Redirect to="/" />
@@ -67,17 +67,16 @@ function App() {
         <Router>
           <Navbar />
           <Switch>
+            <Route path="/posts/:id" component={PostDetails} />
             <Route
-              exact
               path="/posts"
               component={() => <Home posts={posts} setPosts={setPosts} />}
             />
-            <Route path="/posts/:id" component={PostDetails} />
             <PublicOnlyRoute path="/login" component={Login} />
             <PublicOnlyRoute path="/register" component={Register} />
             <PrivateRoute path="/create-post" component={CreatePost} />
             <PrivateRoute path="/logout" component={Logout} />
-            <Route path="/profile/:id" component={Profile} />
+            <Route path="/profile/:name" component={Profile} />
             <Route path="*" component={() => <Redirect to="/posts" />} />
           </Switch>
         </Router>

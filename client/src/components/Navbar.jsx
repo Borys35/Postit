@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { AuthContext } from './Auth';
 
 export default function Navbar() {
-  const { isLoading, userId } = useContext(AuthContext);
+  const { isLoading, user } = useContext(AuthContext);
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark mb-1">
@@ -28,7 +28,7 @@ export default function Navbar() {
               <Link className="nav-item nav-link active" to="/posts">
                 Home <span className="sr-only">(current)</span>
               </Link>
-              {!userId ? (
+              {!user ? (
                 <React.Fragment>
                   <Link className="nav-item nav-link" to="/login">
                     Login
@@ -42,8 +42,11 @@ export default function Navbar() {
                   <Link className="nav-item nav-link" to="/create-post">
                     Create post
                   </Link>
-                  <Link className="nav-item nav-link" to={`/profile/${userId}`}>
-                    {userId}
+                  <Link
+                    className="nav-item nav-link"
+                    to={`/profile/${user.username}`}
+                  >
+                    {user.username}
                   </Link>
                   <Link className="nav-item nav-link" to="/logout">
                     Log Out

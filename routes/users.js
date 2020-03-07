@@ -32,6 +32,13 @@ router.get('/get/:id', (req, res) => {
   });
 });
 
+router.get('/get-by-name/:name', (req, res) => {
+  User.findOne({ username: req.params.name }, (err, user) => {
+    if (err) return res.status(400).send(err);
+    res.status(200).send(user);
+  });
+});
+
 router.post('/register', (req, res) => {
   const userDoc = {
     username: req.body.username,
