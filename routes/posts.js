@@ -24,10 +24,12 @@ const commentSchema = Joi.object({
 });
 
 router.get('/', (req, res) => {
-  Post.find((err, posts) => {
-    if (err) return res.status(400).send(err);
-    res.status(200).send(posts);
-  });
+  Post.find()
+    .sort({ createdAt: -1 })
+    .exec((err, posts) => {
+      if (err) return res.status(400).send(err);
+      res.status(200).send(posts);
+    });
 });
 
 router.get('/:id', (req, res) => {
@@ -35,6 +37,18 @@ router.get('/:id', (req, res) => {
     if (err) return res.status(400).send(err);
     res.status(200).send(post);
   });
+});
+
+router.post('/vote/:id', (req, res) => {
+  if (!req.body.value) return res.status(400).send('No given value');
+  Post.findByIdAndUpdate(
+    req.params.id,
+    { $inc: { upvotes: req.body.value } },
+    (err, post) => {
+      if (err) return res.status(400).send(err);
+      res.status(200).send(post);
+    }
+  );
 });
 
 router.post('/add-comment/:id', (req, res) => {

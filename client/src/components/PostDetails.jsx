@@ -34,12 +34,16 @@ export default function PostDetails() {
           </h3>
           <small>{calculateTimeAgo(post.createdAt)}</small>
           <div className="m-4">
-            {user ? (
-              <AddComment postId={id} />
+            {post.commentable ? (
+              user ? (
+                <AddComment postId={id} />
+              ) : (
+                <h4>
+                  <Link to="/login">Sign in</Link> to be able to comment
+                </h4>
+              )
             ) : (
-              <h4>
-                <Link to="/login">Sign in</Link> to be able to comment
-              </h4>
+              <h4>This post doesn't allow comments</h4>
             )}
           </div>
 

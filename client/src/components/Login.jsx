@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 import { AuthContext } from './Auth';
 
 export default function Login(props) {
@@ -56,6 +56,9 @@ export default function Login(props) {
       <button className="btn btn-primary" onClick={handleLogin}>
         Sign in
       </button>
+      <Link to="/register" className="d-block mt-2">
+        You don't have account? Create one!
+      </Link>
     </div>
   );
 }

@@ -9,7 +9,7 @@ import './App.css';
 import Auth, { AuthContext } from './components/Auth';
 import Loading from './components/Loading';
 
-import Navbar from './components/Navbar';
+import Navigation from './components/Navigation';
 import Home from './components/Home';
 import Login from './components/Login';
 import Register from './components/Register';
@@ -65,7 +65,7 @@ function App() {
     <div>
       <Auth>
         <Router>
-          <Navbar />
+          <Navigation />
           <Switch>
             <Route path="/posts/:id" component={PostDetails} />
             <Route

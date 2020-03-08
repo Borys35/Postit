@@ -10,7 +10,7 @@ export default function Profile() {
     fetch(`/api/users/get-by-name/${name}`)
       .then(res => res.json())
       .then(setUser);
-  }, []);
+  }, [name]);
 
   return (
     <div className="container-lg">

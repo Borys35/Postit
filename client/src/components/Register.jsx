@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 import { AuthContext } from './Auth';
 
 export default function Register(props) {
@@ -67,6 +67,9 @@ export default function Register(props) {
       <button className="btn btn-primary" onClick={handleRegister}>
         Sign up
       </button>
+      <Link to="/login" className="d-block mt-2">
+        You've already got account? Sign here!
+      </Link>
     </div>
   );
 }
