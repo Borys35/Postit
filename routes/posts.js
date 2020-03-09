@@ -35,20 +35,66 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
   Post.findById(req.params.id, (err, post) => {
     if (err) return res.status(400).send(err);
-    res.status(200).send(post);
+    const user = req.cookies.user;
+    if (user) {
+      const { votes } = post;
+      const voter =
+        votes.voters && votes.voters.find(v => v.userId === user._id);
+      if (voter) return res.status(200).json({ post, initVote: voter.vote });
+    }
+    res.status(200).json({ post });
   });
 });
 
 router.post('/vote/:id', (req, res) => {
-  if (!req.body.value) return res.status(400).send('No given value');
-  Post.findByIdAndUpdate(
-    req.params.id,
-    { $inc: { upvotes: req.body.value } },
-    (err, post) => {
-      if (err) return res.status(400).send(err);
-      res.status(200).send(post);
+  const user = req.cookies.user;
+  if (!user) return res.status(400).send('No "user"');
+
+  const { id } = req.params;
+
+  Post.findById(id, (err, post) => {
+    if (err) return res.status(400).send(err);
+
+    const { votes } = post;
+
+    let prevVote = 0;
+    let vote = req.body.vote;
+    if (isNaN(vote))
+      return res.status(400).send('"vote" value must be a number');
+
+    const voter = votes.voters && votes.voters.find(v => v.userId === user._id);
+    if (voter) {
+      prevVote = voter.vote;
+      voter.vote = vote;
+    } else {
+      votes.voters.push({ userId: user._id, vote });
     }
-  );
+
+    if (vote === prevVote) return res.status(304).send(post);
+    if (vote === 1) {
+      votes.upvotes++;
+      if (prevVote === -1) votes.downvotes--;
+    } else if (vote === -1) {
+      votes.downvotes++;
+      if (prevVote === 1) votes.upvotes--;
+    } else if (vote === 0) {
+      if (prevVote === 1) votes.upvotes--;
+      else if (prevVote === -1) votes.downvotes--;
+    }
+
+    try {
+      post
+        .save()
+        .then(data => {
+          res.status(200).send(data);
+        })
+        .catch(err => {
+          throw err;
+        });
+    } catch (err) {
+      return res.status(400).send(err);
+    }
+  });
 });
 
 router.post('/add-comment/:id', (req, res) => {

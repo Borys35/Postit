@@ -47,7 +47,7 @@ if (process.env.NODE_ENV === 'production') {
 // Connecting to database
 mongoose.connect(
   process.env.MONGODB_ATLAS_URI,
-  { useNewUrlParser: true, useUnifiedTopology: true },
+  { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false },
   () => {
     console.log('Connected to database');
   }

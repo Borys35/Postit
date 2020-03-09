@@ -66,7 +66,7 @@ router.post('/register', (req, res) => {
             .then(data => {
               res.cookie('user', user, {
                 httpOnly: true,
-                maxAge: 1000 * 60 * 15
+                maxAge: 1000 * 60 * 60 * 4
               });
               res.status(200).send(data);
             })
@@ -90,7 +90,7 @@ router.post('/login', (req, res) => {
       if (same) {
         res.cookie('user', user, {
           httpOnly: true,
-          maxAge: 1000 * 60 * 15
+          maxAge: 1000 * 60 * 60 * 4
         });
         res.status(200).send(user);
       } else {
