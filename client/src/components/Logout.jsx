@@ -21,7 +21,7 @@ export default function Logout() {
     <div className="container-lg text-center">
       <h3 className="text-danger font-weight-bold">Log out from postit?</h3>
       <p>You can always log back in at any time</p>
-      <div className="d-flex justify-content-center align-items-center">
+      <div className="d-flex justify-content-center">
         <Link className="btn btn-primary mx-2" to="/">
           Go back
         </Link>

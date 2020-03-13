@@ -40,7 +40,7 @@ export default function Navigation() {
   }, [location, user]);
 
   return (
-    <Navbar expand="lg">
+    <Navbar expand="md" sticky="top" bg="light" className="mb-3">
       <Navbar.Brand as={Link} to="/">
         Postit
       </Navbar.Brand>
@@ -50,8 +50,13 @@ export default function Navigation() {
           <Navbar.Collapse id="main-navbar">
             <Nav variant="pills">
               {links.map((l, i) => (
-                <Nav.Item key={i} className="mx-1">
-                  <Nav.Link as={Link} to={l.to} active={l.active}>
+                <Nav.Item key={i} className="m-1">
+                  <Nav.Link
+                    as={Link}
+                    to={l.to}
+                    active={l.active}
+                    className="px-2"
+                  >
                     {l.content}
                   </Nav.Link>
                 </Nav.Item>

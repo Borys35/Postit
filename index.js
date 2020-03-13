@@ -30,10 +30,12 @@ app.use(cors(corsOptions));
 // Routes
 const users = require('./routes/users');
 const posts = require('./routes/posts');
+const communities = require('./routes/communities');
 
 // Use routes
 app.use('/api/users', users);
 app.use('/api/posts', posts);
+app.use('/api/communities', communities);
 
 // Deployment condition
 if (process.env.NODE_ENV === 'production') {

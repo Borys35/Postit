@@ -1,6 +1,9 @@
 const router = require('express').Router();
 const Joi = require('@hapi/joi');
 const Post = require('../models/Post');
+const User = require('../models/User');
+const Community = require('../models/Community');
+const { verifyUser } = require('../middlewares');
 
 const postSchema = Joi.object({
   title: Joi.string()
@@ -9,8 +12,9 @@ const postSchema = Joi.object({
     .required(),
   content: Joi.string()
     .min(10)
-    .max(500)
+    .max(2500)
     .required(),
+  community: Joi.string().required(),
   commentable: Joi.boolean().required(),
   author: Joi.required()
 });
@@ -46,9 +50,8 @@ router.get('/:id', (req, res) => {
   });
 });
 
-router.post('/vote/:id', (req, res) => {
-  const user = req.cookies.user;
-  if (!user) return res.status(400).send('No "user"');
+router.post('/vote/:id', verifyUser, (req, res) => {
+  const { user } = req;
 
   const { id } = req.params;
 
@@ -97,9 +100,8 @@ router.post('/vote/:id', (req, res) => {
   });
 });
 
-router.post('/add-comment/:id', (req, res) => {
-  const user = req.cookies.user;
-  if (!user) return res.status(400).send('No "user"');
+router.post('/add-comment/:id', verifyUser, (req, res) => {
+  const { user } = req;
 
   const commentDoc = {
     content: req.body.content,
@@ -119,13 +121,13 @@ router.post('/add-comment/:id', (req, res) => {
   );
 });
 
-router.post('/create', (req, res) => {
-  const user = req.cookies.user;
-  if (!user) return res.status(400).send('No "user"');
+router.post('/create', verifyUser, async (req, res) => {
+  const { user } = req;
 
   const postDoc = {
     title: req.body.title,
     content: req.body.content,
+    community: req.body.community,
     commentable: req.body.commentable,
     author: user
   };
@@ -134,10 +136,13 @@ router.post('/create', (req, res) => {
   if (error) return res.status(400).send(error);
 
   const post = new Post(postDoc);
-  post
-    .save()
-    .then(value => res.status(200).send(value))
-    .catch(err => res.status(400).send(err));
+  const savedPost = await post.save();
+  await User.updateOne({ _id: user._id }, { $push: { posts: savedPost } });
+  await Community.updateOne(
+    { _id: postDoc.community },
+    { $push: { posts: savedPost } }
+  );
+  res.status(200).send(savedPost);
 });
 
 router.delete('/delete/:id', (req, res) => {

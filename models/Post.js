@@ -11,6 +11,10 @@ const postSchema = new mongoose.Schema({
       ref: 'User'
     }
   },
+  community: {
+    type: mongoose.Types.ObjectId,
+    ref: 'Community'
+  },
   votes: {
     upvotes: {
       type: Number,
@@ -27,14 +31,6 @@ const postSchema = new mongoose.Schema({
       }
     ]
   },
-  // upvotes: {
-  //   type: Number,
-  //   default: 0
-  // },
-  // downvotes: {
-  //   type: Number,
-  //   default: 0
-  // },
   comments: [
     {
       content: String,

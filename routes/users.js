@@ -2,6 +2,8 @@ const router = require('express').Router();
 const Joi = require('@hapi/joi');
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
+const Community = require('../models/Community');
+const { verifyUser } = require('../middlewares');
 
 const userSchema = Joi.object({
   username: Joi.string()
@@ -19,10 +21,9 @@ const userSchema = Joi.object({
     .required()
 });
 
-router.get('/verify', (req, res) => {
-  const user = req.cookies.user;
-  if (!user) return res.status(401).send('Not logged in');
-  res.status(200).send(user);
+router.get('/verify', verifyUser, (req, res) => {
+  const { user } = req;
+  res.status(200).send({ id: user.id, username: user.username });
 });
 
 router.get('/get/:id', (req, res) => {
@@ -37,6 +38,65 @@ router.get('/get-by-name/:name', (req, res) => {
     if (err) return res.status(400).send(err);
     res.status(200).send(user);
   });
+});
+
+router.get('/communities', verifyUser, (req, res) => {
+  const { user } = req;
+  res.status(200).send(user.communities);
+});
+
+router.get('/communities/:id', verifyUser, (req, res) => {
+  const { user } = req;
+
+  const community = user.communities.find(
+    c => c.id.toString() === req.params.id
+  );
+  res.status(200).send(community);
+});
+
+router.patch('/communities/join/:id', verifyUser, (req, res) => {
+  const { user } = req;
+
+  Community.findByIdAndUpdate(
+    req.params.id,
+    { $push: { users: user } },
+    (req, community) => {
+      if (!user.communities.some(c => c.id === community.id)) {
+        try {
+          user.communities.push({ name: community.name, id: community });
+          User.updateOne({ _id: user._id }, user, (err, raw) => {
+            res.status(200).send(raw);
+          });
+        } catch (err) {
+          res.status(400).send(err);
+        }
+      } else {
+        res.status(400).send('Already joined');
+      }
+    }
+  );
+});
+
+router.patch('/communities/leave/:id', verifyUser, async (req, res) => {
+  const { user } = req;
+
+  const community = await Community.findById(req.params.id);
+  if (user.communities.some(c => c.id.toString() === community.id)) {
+    community.users.pull(user.id);
+    try {
+      await User.updateOne(
+        { _id: user._id },
+        // PROBLEM
+        { $pull: { communities: { id: community.id } } }
+      );
+      await community.save();
+      res.status(200).send('Left now');
+    } catch (err) {
+      res.status(400).send(err);
+    }
+  } else {
+    res.status(400).send('Already left');
+  }
 });
 
 router.post('/register', (req, res) => {
@@ -64,7 +124,7 @@ router.post('/register', (req, res) => {
           user
             .save()
             .then(data => {
-              res.cookie('user', user, {
+              res.cookie('userId', user._id, {
                 httpOnly: true,
                 maxAge: 1000 * 60 * 60 * 4
               });
@@ -88,7 +148,7 @@ router.post('/login', (req, res) => {
     bcrypt.compare(req.body.password, user.password, (err, same) => {
       if (err) return res.status(400).send(err);
       if (same) {
-        res.cookie('user', user, {
+        res.cookie('userId', user._id, {
           httpOnly: true,
           maxAge: 1000 * 60 * 60 * 4
         });
@@ -100,8 +160,8 @@ router.post('/login', (req, res) => {
   });
 });
 
-router.post('/logout', (req, res) => {
-  res.clearCookie('user');
+router.post('/logout', verifyUser, (req, res) => {
+  res.clearCookie('userId');
   res.status(200).send('Logged out');
 });
 

@@ -1,19 +1,25 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Container, Row, Col } from 'react-bootstrap';
+import CommunityList from './CommunityList';
 import HomeList from './HomeList';
 
 export default function Home(props) {
-  const { posts, setPosts } = props;
-
-  useEffect(() => {
-    if (posts.length === 0)
-      fetch('/api/posts/')
-        .then(res => res.json())
-        .then(setPosts);
-  }, []);
+  const { posts, communities } = props;
 
   return (
-    <div className="container-lg">
-      <HomeList posts={posts} />
-    </div>
+    <Container fluid className="px-4">
+      <Row>
+        <Col lg={3} md={4}>
+          <CommunityList communities={communities} />
+          <Link className="list-group-item text-center" to="/communities">
+            More communities
+          </Link>
+        </Col>
+        <Col>
+          <HomeList posts={posts} />
+        </Col>
+      </Row>
+    </Container>
   );
 }

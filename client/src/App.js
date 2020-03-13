@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   BrowserRouter as Router,
   Route,
@@ -11,6 +11,8 @@ import Loading from './components/Loading';
 
 import Navigation from './components/Navigation';
 import Home from './components/Home';
+import Communities from './components/Communities';
+import CommunityPage from './components/CommunityPage';
 import Login from './components/Login';
 import Register from './components/Register';
 import PostDetails from './components/PostDetails';
@@ -60,6 +62,24 @@ const PublicOnlyRoute = ({ component: Component, ...rest }) => {
 
 function App() {
   const [posts, setPosts] = useState([]);
+  const [communities, setCommunities] = useState([]);
+
+  function fetchPosts() {
+    fetch('/api/posts/')
+      .then(res => res.json())
+      .then(setPosts);
+  }
+
+  function fetchCommunities() {
+    fetch('/api/communities/')
+      .then(res => res.json())
+      .then(setCommunities);
+  }
+
+  useEffect(() => {
+    fetchPosts();
+    fetchCommunities();
+  }, []);
 
   return (
     <div>
@@ -70,11 +90,19 @@ function App() {
             <Route path="/posts/:id" component={PostDetails} />
             <Route
               path="/posts"
-              component={() => <Home posts={posts} setPosts={setPosts} />}
+              component={() => <Home posts={posts} communities={communities} />}
+            />
+            <Route path="/communities/:id" component={CommunityPage} />
+            <Route
+              path="/communities"
+              component={() => <Communities communities={communities} />}
             />
             <PublicOnlyRoute path="/login" component={Login} />
             <PublicOnlyRoute path="/register" component={Register} />
-            <PrivateRoute path="/create-post" component={CreatePost} />
+            <PrivateRoute
+              path="/create-post"
+              component={() => <CreatePost fetchPosts={fetchPosts} />}
+            />
             <PrivateRoute path="/logout" component={Logout} />
             <Route path="/profile/:name" component={Profile} />
             <Route path="*" component={() => <Redirect to="/posts" />} />

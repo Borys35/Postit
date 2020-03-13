@@ -9,7 +9,7 @@ export default function Auth({ children }) {
   useEffect(() => {
     fetch('/api/users/verify', { credentials: 'include' })
       .then(res => res.json())
-      .then(data => setUser(data))
+      .then(setUser)
       .catch(() => setUser(null))
       .then(() => setLoading(false));
   }, []);
