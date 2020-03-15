@@ -12,11 +12,8 @@ const userSchema = new mongoose.Schema({
   ],
   communities: [
     {
-      name: String,
-      id: {
-        type: mongoose.Types.ObjectId,
-        ref: 'Community'
-      }
+      type: mongoose.Types.ObjectId,
+      ref: 'Community'
     }
   ],
   joinedAt: {

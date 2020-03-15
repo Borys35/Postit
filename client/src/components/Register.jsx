@@ -1,11 +1,13 @@
 import React, { useState, useContext } from 'react';
 import { useHistory, Link } from 'react-router-dom';
+import { Container, Alert } from 'react-bootstrap';
 import { AuthContext } from './Auth';
 
 export default function Register(props) {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState(null);
   const { setUser } = useContext(AuthContext);
   const history = useHistory();
 
@@ -20,19 +22,27 @@ export default function Register(props) {
         password
       })
     })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw res;
+        return res.json();
+      })
       .then(data => {
         setUser(data);
         history.push('/');
       })
       .catch(err => {
-        console.log(err);
+        err.text().then(setError);
       });
   }
 
   return (
-    <div className="container-lg">
+    <Container>
       <h2>Register</h2>
+      {error && (
+        <Alert variant="danger" className="m-3">
+          {error}
+        </Alert>
+      )}
       <div className="form-group">
         <label htmlFor="username">Username</label>
         <input
@@ -70,6 +80,6 @@ export default function Register(props) {
       <Link to="/login" className="d-block mt-2">
         You've already got account? Sign here!
       </Link>
-    </div>
+    </Container>
   );
 }

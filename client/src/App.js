@@ -92,7 +92,7 @@ function App() {
               path="/posts"
               component={() => <Home posts={posts} communities={communities} />}
             />
-            <Route path="/communities/:id" component={CommunityPage} />
+            <Route path="/communities/:name" component={CommunityPage} />
             <Route
               path="/communities"
               component={() => <Communities communities={communities} />}

@@ -10,57 +10,70 @@ import Comments from './Comments';
 
 export default function PostDetails() {
   const [post, setPost] = useState(null);
+  const [votes, setVotes] = useState(null);
   const [vote, setVote] = useState(0);
-  const [doneVote, setDoneVote] = useState(0);
   const [voteClass, setVoteClass] = useState('');
   const { id } = useParams();
   const { user } = useContext(AuthContext);
 
   function handleVote(value) {
-    if (vote === value) setVote(0);
-    else setVote(value);
+    if (value === vote) value = 0;
+    setVote(value);
+
+    fetch(`/api/posts/vote/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        vote: value
+      })
+    });
   }
 
   useEffect(() => {
-    setVoteClass(vote === 0 ? '' : 'text-danger');
-    fetch(`/api/posts/vote/${id}`, {
-      method: 'post',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        vote
-      })
-    });
+    setVoteClass(vote !== 0 ? 'text-info' : '');
   }, [vote]);
 
-  useEffect(() => {
+  function initialize() {
     fetch(`/api/posts/${id}`)
       .then(res => res.json())
+      .then(setPost);
+
+    fetch(`/api/posts/get/votes/${id}`)
+      .then(res => res.json())
       .then(data => {
-        const { post, initVote } = data;
-        if (initVote) {
-          setDoneVote(initVote);
-          setVote(initVote);
-        }
-        setPost(post);
-      })
-      .catch(err => console.log(err));
+        setVotes(data.votes);
+        setVote(data.userVote);
+      });
+  }
+
+  useEffect(() => {
+    initialize();
   }, []);
+
+  function getPercentage() {
+    const total = votes.total + (vote !== 0 ? 1 : 0);
+    const totalUps = votes.totalUps + (vote > 0 ? 1 : 0);
+    return total === 0 ? 0 : Math.round((totalUps / total) * 100);
+  }
 
   return (
     <div className="container-lg">
       {!post ? (
         <Loading />
       ) : (
-        <React.Fragment>
+        <>
           <h2>{post.title}</h2>
           <p>{post.content}</p>
-          <div>
-            <Button onClick={() => handleVote(1)}>/\</Button>
-            <h3 className={`font-weight-bold ${voteClass}`}>
-              {post.votes.upvotes - post.votes.downvotes - doneVote + vote}
-            </h3>
-            <Button onClick={() => handleVote(-1)}>\/</Button>
-          </div>
+          {votes && (
+            <div>
+              <Button onClick={() => handleVote(1)}>/\</Button>
+              <h3 className={`font-weight-bold ${voteClass}`}>
+                {votes.totalUps - (votes.total - votes.totalUps) + vote}
+              </h3>
+              <p>{getPercentage()}% upvoted</p>
+              <Button onClick={() => handleVote(-1)}>\/</Button>
+            </div>
+          )}
           <h3>
             <Link to={`/profile/${post.author.username}`}>
               Author: {post.author.username}
@@ -70,7 +83,7 @@ export default function PostDetails() {
           <div className="m-4">
             {post.commentable ? (
               user ? (
-                <AddComment postId={id} />
+                <AddComment postId={id} onAdd={initialize} />
               ) : (
                 <h4>
                   <Link to="/login">Sign in</Link> to be able to comment
@@ -82,7 +95,7 @@ export default function PostDetails() {
           </div>
 
           <Comments comments={post.comments} />
-        </React.Fragment>
+        </>
       )}
     </div>
   );

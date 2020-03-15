@@ -8,13 +8,13 @@ import JoinCommunityButton from './JoinCommunityButton';
 export default function CommunityPage() {
   const [community, setCommunity] = useState(null);
   const [posts, setPosts] = useState([]);
-  const { id } = useParams();
+  const { name } = useParams();
 
   useEffect(() => {
-    fetch(`/api/communities/${id}`)
+    fetch(`/api/communities/get-by-name/${name}`)
       .then(res => res.json())
       .then(data => {
-        setCommunity(data.comm);
+        setCommunity(data.community);
         setPosts(data.posts);
       });
   }, []);
@@ -24,7 +24,7 @@ export default function CommunityPage() {
       {!community ? (
         <Loading />
       ) : (
-        <React.Fragment>
+        <>
           <Row>
             <Col md={{ span: 10, offset: 1 }} className="mb-3">
               <h2 className="font-weight-bold text-primary">
@@ -44,7 +44,7 @@ export default function CommunityPage() {
               <HomeList posts={posts} />
             </Col>
           </Row>
-        </React.Fragment>
+        </>
       )}
     </Container>
   );

@@ -5,41 +5,28 @@ const postSchema = new mongoose.Schema({
   content: String,
   commentable: Boolean,
   author: {
-    username: String,
-    id: {
-      type: mongoose.Types.ObjectId,
-      ref: 'User'
-    }
+    type: mongoose.Types.ObjectId,
+    ref: 'User'
   },
   community: {
     type: mongoose.Types.ObjectId,
     ref: 'Community'
   },
-  votes: {
-    upvotes: {
-      type: Number,
-      default: 0
-    },
-    downvotes: {
-      type: Number,
-      default: 0
-    },
-    voters: [
-      {
-        userId: String,
-        vote: Number
-      }
-    ]
-  },
+  votes: [
+    {
+      user: {
+        type: mongoose.Types.ObjectId,
+        ref: 'User'
+      },
+      vote: Number
+    }
+  ],
   comments: [
     {
       content: String,
       author: {
-        username: String,
-        id: {
-          type: mongoose.Types.ObjectId,
-          ref: 'User'
-        }
+        type: mongoose.Types.ObjectId,
+        ref: 'User'
       },
       createdAt: {
         type: Date,

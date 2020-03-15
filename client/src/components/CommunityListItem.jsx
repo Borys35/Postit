@@ -7,7 +7,7 @@ export default function CommunityListItem(props) {
 
   return (
     <div className="list-group-item my-2">
-      <Link to={`/communities/${community._id}`}>
+      <Link to={`/communities/${community.name}`}>
         <h3>{community.name}</h3>
         <p>{community.description}</p>
       </Link>

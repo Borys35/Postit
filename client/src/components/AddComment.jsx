@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 export default function AddComment(props) {
   const [content, setContent] = useState('');
-  const { postId } = props;
+  const { postId, onAdd } = props;
 
   function handleAdd() {
     fetch(`/api/posts/add-comment/${postId}`, {
@@ -12,6 +12,9 @@ export default function AddComment(props) {
       body: JSON.stringify({
         content
       })
+    }).then(() => {
+      setContent('');
+      onAdd();
     });
   }
 
@@ -24,6 +27,7 @@ export default function AddComment(props) {
           id="content"
           rows="6"
           placeholder="What are your thoughts?"
+          value={content}
           onChange={e => setContent(e.target.value)}
         ></textarea>
       </div>

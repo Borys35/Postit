@@ -2,6 +2,7 @@ const router = require('express').Router();
 const Joi = require('@hapi/joi');
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
+const Post = require('../models/Post');
 const Community = require('../models/Community');
 const { verifyUser } = require('../middlewares');
 
@@ -40,63 +41,35 @@ router.get('/get-by-name/:name', (req, res) => {
   });
 });
 
-router.get('/communities', verifyUser, (req, res) => {
-  const { user } = req;
-  res.status(200).send(user.communities);
+router.get('/communities/:uid', async (req, res) => {
+  const { uid } = req.params;
+  if (!uid) return res.status(400).send('"uid" is undefined');
+  const user = await User.findById(uid);
+  const communities = await Community.find({ _id: { $in: user.communities } });
+  res.status(200).send(communities);
 });
 
-router.get('/communities/:id', verifyUser, (req, res) => {
+router.get('/posts/:uid', async (req, res) => {
+  const user = await User.findById(req.params.uid);
+  const posts = await Post.find({ _id: { $in: user.posts } })
+    .sort({ createdAt: -1 })
+    .exec();
+
+  for (let i = 0; i < posts.length; i++) {
+    posts[i].author = await User.findById(posts[i].author);
+  }
+
+  res.status(200).send(posts);
+});
+
+// USUALLY USED FOR CHECKINF IF SIGNED USER IS JOINED OR NOT
+router.get('/communities/specify/:id', verifyUser, (req, res) => {
   const { user } = req;
 
   const community = user.communities.find(
-    c => c.id.toString() === req.params.id
+    c => c._id.toString() === req.params.id
   );
   res.status(200).send(community);
-});
-
-router.patch('/communities/join/:id', verifyUser, (req, res) => {
-  const { user } = req;
-
-  Community.findByIdAndUpdate(
-    req.params.id,
-    { $push: { users: user } },
-    (req, community) => {
-      if (!user.communities.some(c => c.id === community.id)) {
-        try {
-          user.communities.push({ name: community.name, id: community });
-          User.updateOne({ _id: user._id }, user, (err, raw) => {
-            res.status(200).send(raw);
-          });
-        } catch (err) {
-          res.status(400).send(err);
-        }
-      } else {
-        res.status(400).send('Already joined');
-      }
-    }
-  );
-});
-
-router.patch('/communities/leave/:id', verifyUser, async (req, res) => {
-  const { user } = req;
-
-  const community = await Community.findById(req.params.id);
-  if (user.communities.some(c => c.id.toString() === community.id)) {
-    community.users.pull(user.id);
-    try {
-      await User.updateOne(
-        { _id: user._id },
-        // PROBLEM
-        { $pull: { communities: { id: community.id } } }
-      );
-      await community.save();
-      res.status(200).send('Left now');
-    } catch (err) {
-      res.status(400).send(err);
-    }
-  } else {
-    res.status(400).send('Already left');
-  }
 });
 
 router.post('/register', (req, res) => {

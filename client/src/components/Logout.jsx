@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { Link, useHistory } from 'react-router-dom';
+import { Container, Card, Button } from 'react-bootstrap';
 import { AuthContext } from './Auth';
 
 export default function Logout() {
@@ -18,17 +19,20 @@ export default function Logout() {
   }
 
   return (
-    <div className="container-lg text-center">
-      <h3 className="text-danger font-weight-bold">Log out from postit?</h3>
-      <p>You can always log back in at any time</p>
-      <div className="d-flex justify-content-center">
-        <Link className="btn btn-primary mx-2" to="/">
-          Go back
-        </Link>
-        <button className="btn btn-danger mx-2" onClick={handleLogout}>
-          Log out
-        </button>
-      </div>
-    </div>
+    <Container fluid className="text-dark">
+      <Card style={{ 'max-width': '24rem' }}>
+        <Card.Header>Logout</Card.Header>
+        <Card.Body>
+          <Card.Title>Log out from postit?</Card.Title>
+          <Card.Text>You can always log back in at any time</Card.Text>
+          <Link className="btn btn-primary mr-2" to="/">
+            Go back
+          </Link>
+          <Button variant="danger" onClick={handleLogout}>
+            Log out
+          </Button>
+        </Card.Body>
+      </Card>
+    </Container>
   );
 }

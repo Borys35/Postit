@@ -1,19 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { useHistory, Link } from 'react-router-dom';
-import { Container, Col, Form, Button } from 'react-bootstrap';
-import Loading from './Loading';
+import React, { useState, useEffect, useContext } from 'react';
+import { useHistory } from 'react-router-dom';
+import { Container, Col, Form, Button, Alert } from 'react-bootstrap';
+import { AuthContext } from './Auth';
 
 export default function CreatePost(props) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [communities, setCommunities] = useState([]);
   const [community, setCommunity] = useState(null);
   const [commentable, setCommentable] = useState(true);
-  const [communities, setCommunities] = useState([]);
+  const [error, setError] = useState(null);
   const { fetchPosts } = props;
+  const { user } = useContext(AuthContext);
   const history = useHistory();
 
   useEffect(() => {
-    fetch('/api/users/communities')
+    fetch(`/api/users/communities/${user.id}`)
       .then(res => res.json())
       .then(setCommunities);
   }, []);
@@ -29,18 +31,29 @@ export default function CreatePost(props) {
         community,
         commentable
       })
-    }).then(res => {
-      if (res.ok) {
-        fetchPosts();
-        history.push('/');
-      }
-    });
+    })
+      .then(res => {
+        if (res.ok) {
+          fetchPosts();
+          history.push('/');
+        } else {
+          throw res;
+        }
+      })
+      .catch(err => {
+        err.text().then(setError);
+      });
   }
 
   return (
     <Container>
       <Form>
         <h2>Create post</h2>
+        {error && (
+          <Alert variant="danger" className="m-3">
+            {error}
+          </Alert>
+        )}
         <Form.Row>
           <Form.Group as={Col}>
             <Form.Label>Title</Form.Label>
@@ -58,7 +71,7 @@ export default function CreatePost(props) {
             >
               <option value="">Choose...</option>
               {communities.map((c, i) => (
-                <option key={i} value={c.id}>
+                <option key={i} value={c._id}>
                   {c.name}
                 </option>
               ))}

@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Button } from 'react-bootstrap';
+import { AuthContext } from './Auth';
 import Loading from './Loading';
 
 export default function JoinCommunityButton(props) {
   const [loading, setLoading] = useState(true);
   const [joined, setJoined] = useState(false);
   const { community } = props;
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
-    fetch(`/api/users/communities/${community._id}`)
+    fetch(`/api/users/communities/specify/${community._id}`)
       .then(res => res.json())
       .then(data => {
         if (data) setJoined(true);
@@ -21,7 +23,7 @@ export default function JoinCommunityButton(props) {
 
   function join() {
     setLoading(true);
-    fetch(`/api/users/communities/join/${community._id}`, {
+    fetch(`/api/communities/join/${community._id}`, {
       method: 'PATCH',
       credentials: 'include'
     })
@@ -36,7 +38,7 @@ export default function JoinCommunityButton(props) {
 
   function leave() {
     setLoading(true);
-    fetch(`/api/users/communities/leave/${community._id}`, {
+    fetch(`/api/communities/leave/${community._id}`, {
       method: 'PATCH',
       credentials: 'include'
     })
@@ -50,14 +52,14 @@ export default function JoinCommunityButton(props) {
   }
 
   return (
-    <React.Fragment>
+    <>
       {loading ? (
         <Loading />
       ) : (
-        <Button onClick={joined ? leave : join}>
+        <Button onClick={joined ? leave : join} disabled={!user}>
           {joined ? 'Leave' : 'Join'}
         </Button>
       )}
-    </React.Fragment>
+    </>
   );
 }

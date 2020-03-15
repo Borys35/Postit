@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 export default function Comments(props) {
   const { comments } = props;
@@ -11,6 +12,8 @@ export default function Comments(props) {
           comments.map((c, i) => (
             <li key={i} className="list-group-item text-dark my-1">
               {c.content}
+              {/* <Link to={`/profile/${c.author}`}>{c.author}</Link>{' '}
+              {c.createdAt} */}
             </li>
           ))
         ) : (
