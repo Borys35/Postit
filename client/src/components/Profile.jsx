@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Container, Row, Col } from 'react-bootstrap';
+import { getDate } from '../utils';
+
 import Loading from './Loading';
 import CommunityList from './CommunityList';
 import HomeList from './HomeList';
@@ -36,7 +38,7 @@ export default function Profile() {
           <Row>
             <Col md="3">
               <h2>{user.username}</h2>
-              <p>{new Date(user.joinedAt).toUTCString()}</p>
+              <p>Joined {getDate(user.joinedAt)}</p>
             </Col>
             <Col>
               <h3>Posts</h3>

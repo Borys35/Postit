@@ -17,6 +17,7 @@ export default function Home(props) {
           </Link>
         </Col>
         <Col>
+          <h2>Posts</h2>
           <HomeList posts={posts} />
         </Col>
       </Row>

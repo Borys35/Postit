@@ -10,6 +10,7 @@ import Auth, { AuthContext } from './components/Auth';
 import Loading from './components/Loading';
 
 import Navigation from './components/Navigation';
+import Footer from './components/Footer';
 import Home from './components/Home';
 import Communities from './components/Communities';
 import CommunityPage from './components/CommunityPage';
@@ -107,6 +108,7 @@ function App() {
             <Route path="/profile/:name" component={Profile} />
             <Route path="*" component={() => <Redirect to="/posts" />} />
           </Switch>
+          <Footer />
         </Router>
       </Auth>
     </div>

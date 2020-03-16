@@ -96,7 +96,7 @@ router.post('/add-comment/:id', verifyUser, (req, res) => {
 
   const commentDoc = {
     content: req.body.content,
-    author: user
+    author: user.username
   };
 
   const { error } = commentSchema.validate(commentDoc);

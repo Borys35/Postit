@@ -19,8 +19,8 @@ export default function Logout() {
   }
 
   return (
-    <Container fluid className="text-dark">
-      <Card style={{ 'max-width': '24rem' }}>
+    <Container fluid className="text-dark d-flex justify-content-center">
+      <Card>
         <Card.Header>Logout</Card.Header>
         <Card.Body>
           <Card.Title>Log out from postit?</Card.Title>
